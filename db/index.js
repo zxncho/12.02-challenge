@@ -7,25 +7,25 @@ class database  {
 
 AllEmployees() {
     return this.connection.promise().query(
-        "SELECT employees.id, employees.first_name, employees.last_name, roles.job_title, departments.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN role on employees.role_id = role.id LEFT JOIN department on roles.department_id = departments.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
+        "SELECT employee.id, employee.first_name, employee.last_name, roles.job_title, departments.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on roles.department_id = departments.id LEFT JOIN employee on manager.id = employee.manager_id;"
     );
 }
 
 AllManagers () {
     return this.connection.promise().query(
-        "SELECT id, first_name, last_name FROM employees WHERE id != ?",
+        "SELECT id, first_name, last_name FROM employee WHERE manager_id = 'NULL'",
         employeeId
     );
 }
 
 createEmployee () {
-    return this.connection.promise().query("INSERT INTO employees SET ?", employee);
+    return this.connection.promise().query("INSERT INTO employee SET ?", employee);
 
 }
 
 deleteEmployee () {
     return this.connection.promise().query(
-        "DELETE FROM employees WHERE id = ?",
+        "DELETE FROM employee WHERE id = ?",
         employeeId
     );
 
@@ -33,7 +33,7 @@ deleteEmployee () {
 
 updateRole () {
     return this.connection.promise().query(
-        "UPDATE employees SET role_id = ? WHERE id = ?",
+        "UPDATE employee SET role_id = ? WHERE id = ?",
         [roleId, employeeId]
     );
 
@@ -41,7 +41,7 @@ updateRole () {
 
 updateManager () {
     return this.connection.promise().query(
-        "UPDATE employees SET manager_id = ? WHERE id = ?",
+        "UPDATE employee SET manager_id = ? WHERE id = ?",
         [managerId, employeeId]
     );
 
@@ -49,31 +49,31 @@ updateManager () {
 
 findRoles () {
     return this.connection.promise().query(
-    "SELECT roles.id, roles.title, departments.name AS department, roles.salary FROM role LEFT JOIN department on role.department_id = departments.id;"
+    "SELECT roles.id, roles.title, departments.name AS department, roles.salary FROM role LEFT JOIN department on roles.department_id = departments.id;"
     );
 
 }
 
 createRole () {
-    return this.connection.promise().query("INSERT INTO role SET ?", roles);
+    return this.connection.promise().query("INSERT INTO roles SET ?", roles);
 
 }
 
 deleteRole () {
-    return this.connection.promise().query("DELETE FROM role WHERE id = ?", rolesId);
+    return this.connection.promise().query("DELETE FROM roles WHERE id = ?", roles);
 
 }
 
 findDepartments () {
     return this.connection.promise().query(
-        "SELECT deparments.id, departments.name FROM departments"
+        "SELECT departments.id, departments.name FROM departments"
     );
 
 }
 
 viewBudgets () {
     return this.connection.promise().query(
-        "SELECT departments.id, departments.name, SUM(roles.salary) AS utilized_budget FROM employees LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = departments.id GROUP BY departments.id, departments.name;"
+        "SELECT departments.id, departments.name, SUM(roles.salary) AS utilized_budget FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on roles.department_id = departments.id GROUP BY departments.id, departments.name;"
     );
 
 }
@@ -93,7 +93,7 @@ deleteDepartment () {
 
 employeeByDepartment () {
     return this.connection.promise().query(
-        "SELECT employees.id, employees.first_name, employees.last_name, roles.title FROM employees LEFT JOIN role on employee.role_id = roles.id LEFT JOIN department department on roles.department_id = departments.id WHERE departments.id = ?;",
+        "SELECT employee.id, employee.first_name, employee.last_name, roles.job_title FROM employee LEFT JOIN role on employee.role_id = roles.id LEFT JOIN department on roles.department_id = departments.id WHERE departments.id = ?;",
         departmentId
     );
 
@@ -101,7 +101,7 @@ employeeByDepartment () {
 
 employeeByManager () {
     return this.connection.promise().query(
-        "SELECT employees.id, employees.first_name, employees.last_name, departments.name AS department, roles.title FROM employee LEFT JOIN role on roles.id = employees.roles_id LEFT JOIN department ON departments.id = roles.departments_id WHERE manager_id = ?;",
+        "SELECT employee.id, employee.first_name, employee.last_name, departments.name AS department, roles.title FROM employee LEFT JOIN role on role.id = employee.role_id LEFT JOIN department ON departments.id = roles.departments_id WHERE manager_id = ?;",
         managerId
     );
  }

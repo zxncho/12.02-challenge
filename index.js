@@ -81,46 +81,46 @@ function loadMainPrompts() {
     // Call the appropriate function depending on what the user chose
     switch (choice) {
       case "VIEW_EMPLOYEES":
-        viewEmployees();
+        AllEmployees();
         break;
       case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-        viewEmployeesByDepartment();
+        employeeByDepartment();
         break;
       case "VIEW_EMPLOYEES_BY_MANAGER":
-        viewEmployeesByManager();
+        employeeByManager();
         break;
       case "ADD_EMPLOYEE":
-        addEmployee();
+        createEmployee();
         break;
       case "REMOVE_EMPLOYEE":
-        removeEmployee();
+        deleteEmployee();
         break;
       case "UPDATE_EMPLOYEE_ROLE":
-        updateEmployeeRole();
+        updateRole();
         break;
       case "UPDATE_EMPLOYEE_MANAGER":
-        updateEmployeeManager();
+        updateManager();
         break;
       case "VIEW_DEPARTMENTS":
-        viewDepartments();
+        findDepartments();
         break;
       case "ADD_DEPARTMENT":
-        addDepartment();
+        createDepartmentDepartment();
         break;
       case "REMOVE_DEPARTMENT":
-        removeDepartment();
+        deleteDepartment();
         break;
       case "VIEW_UTILIZED_BUDGET_BY_DEPARTMENT":
-        viewUtilizedBudgetByDepartment();
+        viewBudgets();
         break;
       case "VIEW_ROLES":
-        viewRoles();
+        findRoles();
         break;
       case "ADD_ROLE":
-        addRole();
+        createRole();
         break;
       case "REMOVE_ROLE":
-        removeRole();
+        deleteRole();
         break;
       default:
         quit();
@@ -130,19 +130,19 @@ function loadMainPrompts() {
 }
 
 // View all employees
-function viewEmployees() {
-  db.findAllEmployees()
+function AllEmployees() {
+  db.AllEmployees()
     .then(([rows]) => {
-      let employees = rows;
+      let employee = rows;
       console.log("\n");
-      console.table(employees);
+      console.table(employee);
     })
     .then(() => loadMainPrompts());
 }
 
 // View all employees that belong to a department
-function viewEmployeesByDepartment() {
-  db.findAllDepartments()
+function employeeByDepartment() {
+  db.findDepartments()
     .then(([rows]) => {
       let departments = rows;
       const departmentChoices = departments.map(({ id, name }) => ({
@@ -158,7 +158,7 @@ function viewEmployeesByDepartment() {
           choices: departmentChoices
         }
       ])
-        .then(res => db.findAllEmployeesByDepartment(res.departmentId))
+        .then(res => db.employeeByDepartment(res.departmentId))
         .then(([rows]) => {
           let employees = rows;
           console.log("\n");
@@ -169,8 +169,8 @@ function viewEmployeesByDepartment() {
 }
 
 // View all employees that report to a specific manager
-function viewEmployeesByManager() {
-  db.findAllEmployees()
+function employeeByManager() {
+  db.AllEmployees()
     .then(([rows]) => {
       let managers = rows;
       const managerChoices = managers.map(({ id, first_name, last_name }) => ({
@@ -201,8 +201,8 @@ function viewEmployeesByManager() {
 }
 
 // Delete an employee
-function removeEmployee() {
-  db.findAllEmployees()
+function deleteEmployee() {
+  db.AllEmployees()
     .then(([rows]) => {
       let employees = rows;
       const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
@@ -225,8 +225,8 @@ function removeEmployee() {
 }
 
 // Update an employee's role
-function updateEmployeeRole() {
-  db.findAllEmployees()
+function updateRole() {
+  db.AllEmployees()
     .then(([rows]) => {
       let employees = rows;
       const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
@@ -269,8 +269,8 @@ function updateEmployeeRole() {
 }
 
 // Update an employee's manager
-function updateEmployeeManager() {
-  db.findAllEmployees()
+function updateManager() {
+  db.AllEmployees()
     .then(([rows]) => {
       let employees = rows;
       const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
@@ -315,7 +315,7 @@ function updateEmployeeManager() {
 
 // View all roles
 function viewRoles() {
-  db.findAllRoles()
+  db.findRoles()
     .then(([rows]) => {
       let roles = rows;
       console.log("\n");
@@ -325,8 +325,8 @@ function viewRoles() {
 }
 
 // Add a role
-function addRole() {
-  db.findAllDepartments()
+function createRole() {
+  db.findDepartments()
     .then(([rows]) => {
       let departments = rows;
       const departmentChoices = departments.map(({ id, name }) => ({
@@ -359,8 +359,8 @@ function addRole() {
 }
 
 // Delete a role
-function removeRole() {
-  db.findAllRoles()
+function deleteRole() {
+  db.findRoles()
     .then(([rows]) => {
       let roles = rows;
       const roleChoices = roles.map(({ id, title }) => ({
@@ -385,7 +385,7 @@ function removeRole() {
 
 // View all deparments
 function viewDepartments() {
-  db.findAllDepartments()
+  db.findDepartments()
     .then(([rows]) => {
       let departments = rows;
       console.log("\n");
@@ -395,7 +395,7 @@ function viewDepartments() {
 }
 
 // Add a department
-function addDepartment() {
+function createDepartment() {
   prompt([
     {
       name: "name",
@@ -411,8 +411,8 @@ function addDepartment() {
 }
 
 // Delete a department
-function removeDepartment() {
-  db.findAllDepartments()
+function deleteDepartment() {
+  db.AllDepartments()
     .then(([rows]) => {
       let departments = rows;
       const departmentChoices = departments.map(({ id, name }) => ({
@@ -435,7 +435,7 @@ function removeDepartment() {
 
 // View all departments and show their total utilized department budget
 function viewUtilizedBudgetByDepartment() {
-  db.viewDepartmentBudgets()
+  db.viewBudgets()
     .then(([rows]) => {
       let departments = rows;
       console.log("\n");
@@ -445,7 +445,7 @@ function viewUtilizedBudgetByDepartment() {
 }
 
 // Add an employee
-function addEmployee() {
+function createEmployee() {
   prompt([
     {
       name: "first_name",
@@ -460,7 +460,7 @@ function addEmployee() {
       let firstName = res.first_name;
       let lastName = res.last_name;
 
-      db.findAllRoles()
+      db.findRoles()
         .then(([rows]) => {
           let roles = rows;
           const roleChoices = roles.map(({ id, title }) => ({
@@ -477,7 +477,7 @@ function addEmployee() {
             .then(res => {
               let roleId = res.roleId;
 
-              db.findAllEmployees()
+              db.AllEmployees()
                 .then(([rows]) => {
                   let employees = rows;
                   const managerChoices = employees.map(({ id, first_name, last_name }) => ({
